@@ -82,10 +82,109 @@
                 align-items: center;
             }
         }
+        .form-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+            margin-top: 20px;
+           margin-left: 35%;
+           margin-bottom: 120px;
+        }
+
+        .form-container h2 {
+            margin-top: 0;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+
+        input[type="email"],
+        input[type="tel"] {
+            width: 90%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .notification-button, .submit-button {
+            padding: 10px 20px;
+            background-color: #0288d1;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.2em;
+            margin-top: 15px;
+        }
+
+        .notification-button {
+            margin-top: 0;
+            font-size: 1em;
+        }
     </style>
+    <script>
+        // Function to request notification permission and show a water-saving tip
+        function requestNotificationPermission() {
+            if ('Notification' in window) {
+                Notification.requestPermission().then(permission => {
+                    if (permission === 'granted') {
+                        fetchWaterSavingTip();
+                    } else {
+                        alert("Notifications are disabled. You won't receive water-saving reminders.");
+                    }
+                });
+            } else {
+                alert("Your browser does not support notifications.");
+            }
+        }
+
+        // Function to fetch a water-saving tip from Wikipedia
+        function fetchWaterSavingTip() {
+            fetch("https://en.wikipedia.org/api/rest_v1/page/summary/Water_conservation")
+                .then(response => response.json())
+                .then(data => {
+                    const tip = data.extract.split(".")[0] + "."; // Get the first sentence as the tip
+                    showWaterSavingNotification(tip);
+                })
+                .catch(error => {
+                    console.error("Error fetching water-saving tip:", error);
+                    showWaterSavingNotification("Save water by reducing usage in everyday activities.");
+                });
+        }
+
+        // Function to show the water-saving notification
+        function showWaterSavingNotification(tip) {
+            const options = {
+                body: tip,
+                icon: 'https://example.com/water-icon.png' // Replace with a valid icon URL
+            };
+            new Notification('💧 Save Water Tip', options);
+        }
+        function submitContactInfo() {
+            const email = document.getElementById("email").value;
+            const phone = document.getElementById("phone").value;
+
+            // Simulate backend API request
+            if (email || phone) {
+                alert("Thank you! You'll start receiving water-saving tips soon.");
+                console.log("Contact submitted:", { email, phone });
+
+                // Clear form inputs
+                document.getElementById("contactForm").reset();
+            } else {
+                alert("Please enter at least an email or a phone number.");
+            }
+        }
+    </script>
 </head>
 <body>
-
+    <button class="notification-button" onclick="requestNotificationPermission()">Enable Water Saving Reminders</button>
     <header>
         <h1>Save Water, Save Life</h1>
         <p>Water-saving tips for first-year CSE students</p>
@@ -154,7 +253,7 @@
             </a>
 
             <a href="wash-vehicle.html" class="tip-card">
-                <img src="car_wash.png" alt="Wash Vehicle">
+                <img src="car_wash.png.jpg" alt="Wash Vehicle">
                 <h3>Wash Your Vehicle Carefully</h3>
                 <p>Use a bucket and sponge to wash your vehicle instead of a hose. This reduces water waste significantly.</p>
             </a>
@@ -162,10 +261,18 @@
         </div>
     </section>
 
-    <section id="get-involved">
+    <section class="form-container">
         <h2>Get Involved</h2>
-        <p>Spread awareness about water conservation in your dorms and campus. Share these simple tips with your fellow students, and encourage your university to adopt more sustainable practices!</p>
-        <p><strong>Contact us:</strong> <a href="mailto:info@savewater.org">info@savewater.org</a></p>
+        <p>Enter your email or phone number to receive water-saving tips!</p>
+        <form id="contactForm">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" placeholder="Enter your email">
+
+            <label for="phone">Phone Number:</label>
+            <input type="tel" id="phone" name="phone" placeholder="Enter your phone number">
+
+            <button type="button" class="submit-button" onclick="submitContactInfo()">Submit</button>
+        </form>
     </section>
 
     <footer>
